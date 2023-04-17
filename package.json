@@ -1,7 +1,7 @@
 {
   "name": "audio-waveform-player-react",
   "version": "1.0.0",
-  "description": "",
+  "description": "基于wavesurferjs的音频波形播放器",
   "main": "dist/index.js",
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -23,13 +23,12 @@
     "react-dom": "^16.4.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --mode development",
     "transpile": "babel src -d dist --copy-files"
   },
   "repository": {
     "type": "git",
-    "url": "git@gitee.com:arikar/audio-waveform-player-react.git"
+    "url": "https://github.com/ArikarWang/audio-waveform-player-react.git"
   },
   "author": "",
   "license": "MIT",
