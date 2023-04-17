@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import cx from 'classnames';
-import './progressbar.less';
+import './progressbar.css';
 // import { Dropdown, Icon, Menu } from 'antd';
 import Dropdown from 'antd/es/dropdown';
 import 'antd/es/dropdown/style/css';
@@ -8,7 +8,6 @@ import Icon from 'antd/es/icon';
 import 'antd/es/icon/style/css';
 import Menu from 'antd/es/menu';
 import 'antd/es/menu/style/css';
-import { isNaN } from 'lodash';
 
 export class ProgressBar extends Component {
   constructor(props) {
