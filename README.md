@@ -1,4 +1,4 @@
-2.0.0-beta.1
+2.0.1-beta.1
 
 带音频波形显示的音频播放器,基于wavesurferjs,倍速播放优化使用了soundtouchjs
 
@@ -9,7 +9,7 @@
 |      theme      |                             主题                             |        `string`        | default |
 |     config      | [wavesurfer.js基础配置项](https://wavesurfer-js.org/docs/options.html)，设置该参数会使主题基础配置失效 |        `object`        |    -    |
 |     plugins     | [wavesurfer.js插件配置](https://wavesurfer-js.org/plugins/)，设置该参数会使主题插件配置失效 |        `object`        |    -    |
-|      file       |                           音频文件                           | `string`|`File`|`Blob` |    -    |
+|      file       |                           音频文件                           | `string`、`File`、`Blob` |    -    |
 |   isDownload    |                         是否启用下载                         |       `boolean`        |  false  |
 | onWaveSurferRef |                     返回`WaveSurfer`实例                     |    `(ref) => void`     |    -    |
 |     onPlay      |                        开始播放时触发                        |      `() => void`      |    -    |
