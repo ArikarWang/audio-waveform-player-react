@@ -1,4 +1,3 @@
-import WaveSurfer from './wavesufer';
-import 'antd/dist/antd.css';
+import WaveSurfer from './audioWaveformPlayer';
 
 export default WaveSurfer;

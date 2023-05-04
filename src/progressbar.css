@@ -6,15 +6,15 @@
   position: relative;
 }
 
-.progress_bar_container .video-play {
+.progress_bar_container .audio-play {
   position: relative;
 }
 
-.progress_bar_container .video-play .video-left {
+.progress_bar_container .audio-play .audio-left {
   position: relative;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap {
+.progress_bar_container .audio-play .audio-left .control-wrap {
   height: 50px;
   padding: 0 24px;
   background-color: #e5e5e5;
@@ -24,7 +24,7 @@
   gap: 24px;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .begin .anticon {
+.progress_bar_container .audio-play .audio-left .control-wrap .begin .anticon {
   font-size: 32px;
   cursor: pointer;
   user-select: none;
@@ -33,14 +33,15 @@
   border-radius: 50%;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .progress-wrap {
+.progress_bar_container .audio-play .audio-left .control-wrap .progress-wrap {
   flex: 1;
   position: relative;
   padding: 2px 0;
   cursor: pointer;
+  min-width: 100px;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .progress-wrap .circle {
+.progress_bar_container .audio-play .audio-left .control-wrap .progress-wrap .circle {
   width: 16px;
   height: 16px;
   border-radius: 8px;
@@ -54,8 +55,8 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .progress-wrap
   .circle
@@ -70,13 +71,13 @@
   transform: translate(-50%, -50%);
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .progress-wrap .progress-bg {
+.progress_bar_container .audio-play .audio-left .control-wrap .progress-wrap .progress-bg {
   height: 8px;
   border-radius: 4px;
   background: #fff;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .progress-wrap .slide {
+.progress_bar_container .audio-play .audio-left .control-wrap .progress-wrap .slide {
   height: 8px;
   border-radius: 4px;
   background: var(--deep-color);
@@ -87,19 +88,19 @@
   z-index: 9;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .sound-volume {
+.progress_bar_container .audio-play .audio-left .control-wrap .sound-volume {
   position: relative;
   line-height: 1;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .sound-volume .sound-volume-icon {
+.progress_bar_container .audio-play .audio-left .control-wrap .sound-volume .sound-volume-icon {
   color: var(--deep-color);
   cursor: pointer;
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .sound-volume-icon.sound {
@@ -107,8 +108,8 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .sound-volume-icon.stop {
@@ -116,14 +117,14 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .volume-progress-container:hover,
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume:hover
   .volume-progress-container {
@@ -132,8 +133,8 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .volume-progress-container {
@@ -157,8 +158,8 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .volume-progress-container
@@ -169,8 +170,8 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .volume-progress-container
@@ -189,8 +190,8 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .volume-progress-container
@@ -207,8 +208,8 @@
 }
 
 .progress_bar_container
-  .video-play
-  .video-left
+  .audio-play
+  .audio-left
   .control-wrap
   .sound-volume
   .volume-progress-container
@@ -221,7 +222,7 @@
   overflow-y: hidden;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .speech-rate {
+.progress_bar_container .audio-play .audio-left .control-wrap .speech-rate {
   width: 80px;
   color: var(--deep-color);
   user-select: none;
@@ -229,11 +230,14 @@
   text-align: left;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .speech-rate .speech-rate-text {
+.progress_bar_container .audio-play .audio-left .control-wrap .speech-rate .speech-rate-text {
   color: var(--deep-color) !important;
+  display: inline-block;
+  min-width: 35px;
+  text-align: center;
 }
 
-.progress_bar_container .video-play .video-left .control-wrap .more-menu {
+.progress_bar_container .audio-play .audio-left .control-wrap .more-menu {
   color: var(--deep-color);
   cursor: pointer;
 }

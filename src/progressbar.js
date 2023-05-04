@@ -31,7 +31,7 @@ export class ProgressBar extends Component {
     this.volumeSlideBtn = createRef();
 
     this.state = {
-      filePath: '',
+      file: '',
       volumeVisible: false,
       volume: 0,
       // tag: true, // 播放状态
@@ -72,14 +72,14 @@ export class ProgressBar extends Component {
       (!isNaN(Number(props.volume)) &&
         !isNaN(Number(state.volume)) &&
         props.volume !== state.volume) ||
-      props.filePath !== state.filePath
+      props.file !== state.file
     ) {
       // const progressBar = new ProgressBar(props);
       // console.log(props.rate);
       // progressBar.changeRate(props.rate);
       const obj = {
         volume: props.volume,
-        filePath: props.filePath,
+        file: props.file,
       };
       Object.assign(state, obj);
       return state;
@@ -99,11 +99,17 @@ export class ProgressBar extends Component {
     return 0;
   }
   progressBarOnResize() {
-    if (this.proWrap.current && !this.props.isPlay) {
-      let detal = this.proWrap.current.clientWidth * this.props.rate;
-      this.slideBtn.current.style.left = detal + 'px';
-      this.slide.current.style.width = detal + 2 + 'px';
-      this.props.seek(detal / this.proWrap.current.clientWidth);
+    if (this.proWrap.current && !this.props.isPlay && this.props.rate !== 0) {
+      const me = this;
+      clearTimeout(this.timeOut);
+      this.timeOut = setTimeout(() => {
+        let detal = this.proWrap.current.clientWidth * this.props.rate;
+        this.slideBtn.current.style.left = detal + 'px';
+        this.slide.current.style.width = detal + 2 + 'px';
+        this.props.seek(detal / this.proWrap.current.clientWidth);
+        clearTimeout(me.timeOut);
+        me.timeOut = null;
+      }, 100);
     }
     // if (this.volumeWrap.current && !this.props.isPlay) {
     //   let detal = this.volumeWrap.current.clientHeight * this.props.volume;
@@ -128,7 +134,6 @@ export class ProgressBar extends Component {
         ev = window.event || ev;
         const progressleft = this.volumeWrap.current.getBoundingClientRect();
         let detal = ev.clientY - parseFloat(progressleft.bottom);
-        // console.log(videoleft.offsetLeft);
         this.slideBtn.current.style.bottom = detal + 'px';
         this.slide.current.style.height = detal + 2 + 'px';
         this.props.volumeChange(detal / this.volumeWrap.current.clientWidth);
@@ -186,7 +191,6 @@ export class ProgressBar extends Component {
       ev = window.event || ev;
       const progressleft = this.proWrap.current.getBoundingClientRect();
       let detal = ev.clientX - parseFloat(progressleft.left);
-      // console.log(videoleft.offsetLeft);
       this.slideBtn.current.style.left = detal + 'px';
       this.slide.current.style.width = detal + 2 + 'px';
       this.props.seek(detal / this.proWrap.current.clientWidth);
@@ -250,9 +254,14 @@ export class ProgressBar extends Component {
     const { key } = menuEvent;
     switch (key) {
       case 'download':
-        if (this.props.filePath) {
+        if (this.props.file) {
           const el = document.createElement('a');
-          el.href = this.props.filePath;
+          if (this.props.isFile) {
+            el.href = window.URL.createObjectURL(this.props.file);
+            el.download = this.props.file.name;
+          } else {
+            el.href = this.props.file;
+          }
           el.hidden = true;
           document.body.appendChild(el);
           el.click();
@@ -290,8 +299,8 @@ export class ProgressBar extends Component {
     };
     return (
       <div className="progress_bar_container">
-        <div className="video-play">
-          <div className="video-left">
+        <div className="audio-play">
+          <div className="audio-left">
             <div className="control-wrap">
               <div title="播放/暂停" ref={this.playbtn} className="begin">
                 {isPlay ? (
@@ -362,7 +371,8 @@ export class ProgressBar extends Component {
               <div title="语速" className="speech-rate">
                 <Dropdown overlay={speechRateContent} trigger={['click']}>
                   <a className="speech-rate-text" onClick={e => e.preventDefault()}>
-                    语速：{speechRate}x
+                    {/* 语速：{speechRate}x */}
+                    {speechRate === '1' ? '语速' : speechRate + 'x'}
                   </a>
                 </Dropdown>
               </div>
