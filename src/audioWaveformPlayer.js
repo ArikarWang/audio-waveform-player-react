@@ -31,8 +31,8 @@ export class AudioWaveformPlayer extends Component {
       totalTime: 0, // 总时长
       nowTime: 0, // 当前播放时长
       volume: 0, // 音量
-      speechRate: '1', // 语速
-      speechRateOptions: ['2', '1.5', '1.25', '1', '0.75', '0.5'], // 语速选项
+      speechRate: 1, // 语速
+      speechRateOptions: [2, 1.5, 1.25, 1, 0.75, 0.5], // 语速选项
       autoplay: false, // 是否自动播放
       isFile: false, // 是否是文件
     };
@@ -210,11 +210,24 @@ export class AudioWaveformPlayer extends Component {
     // 错误监听
     waveSurfer.on('error', e => {
       console.log('error', e);
-      if (me.props.onError) {
-        me.props.onError(e);
-      } else if (e === 'Error decoding audiobuffer') {
-        console.log('录音解码错误');
-        message.error('录音解码错误');
+      try {
+        if (me.props.onError) {
+          me.state.waveSurfer.empty();
+          me.setState(() => ({ waveSurferLoading: false }));
+          me.props.onError(e);
+          return;
+        } else if (e === 'Error decoding audiobuffer') {
+          console.log('音频解码错误');
+          message.error('音频解码错误');
+        } else if (e.toString().includes('TypeError: Failed to fetch')) {
+          console.log('音频文件加载失败');
+          message.error('音频文件加载失败');
+        }
+        me.state.waveSurfer.empty();
+        me.setState(() => ({ waveSurferLoading: false }));
+      } catch (error) {
+        me.state.waveSurfer.empty();
+        me.setState(() => ({ waveSurferLoading: false }));
       }
     });
 
@@ -363,10 +376,17 @@ export class AudioWaveformPlayer extends Component {
   componentDidUpdate(preProps, preState) {
     if (!!this.props.file && preProps.file !== this.props.file && this.state.waveSurfer !== null) {
       // console.log('filePathChange');
-      this.isFile(this.props.file)
-        ? this.state.waveSurfer.loadBlob(this.props.file)
-        : this.state.waveSurfer.load(this.props.file);
-      // this.setState(() => ({ file: this.props.file }));
+      if (this.state.waveSurfer) {
+        this.isFile(this.props.file)
+          ? this.state.waveSurfer.loadBlob(this.props.file)
+          : this.state.waveSurfer.load(this.props.file);
+        this.setState(() => ({
+          // file: this.props.file,
+          waveSurferLoading: true,
+        }));
+      } else {
+        this.initWaveSurfer();
+      }
     }
   }
 
@@ -482,12 +502,12 @@ export class AudioWaveformPlayer extends Component {
         // console.log('speechRateChange');
         if (me.state.waveSurfer.isPlaying()) {
           me.state.waveSurfer.pause();
-          me.state.waveSurfer.setPlaybackRate(key);
+          me.state.waveSurfer.setPlaybackRate(Number(key));
           me.state.waveSurfer.play();
         } else {
-          me.state.waveSurfer.setPlaybackRate(key);
+          me.state.waveSurfer.setPlaybackRate(Number(key));
         }
-        me.setState(() => ({ speechRate: key }));
+        me.setState(() => ({ speechRate: Number(key) }));
       },
       volumeChange(val) {
         me.state.waveSurfer.setVolume(val);

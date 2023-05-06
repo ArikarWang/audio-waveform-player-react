@@ -9,6 +9,7 @@ export default {
       height: 30,
       responsive: true,
       cursorColor: '#a15748',
+      // backend: 'MediaElement',
       splitChannelsOptions: {
         overlay: false,
         channelColors: {
@@ -21,6 +22,9 @@ export default {
             waveColor: 'rgba(74, 136, 220, .5)',
           },
         },
+      },
+      xhr: {
+        // mode: 'no-cors', // no-cors, cors, *same-origin
       },
     },
     plugins: {

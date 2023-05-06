@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import { Icon, Upload } from 'antd';
+import { Icon, Input, Upload } from 'antd';
 import 'antd/dist/antd.css';
 import MyComponent from '../../src';
 
@@ -12,10 +12,10 @@ class App extends Component {
     this.state = {
       file: null,
       filePath: '',
-      fileType: '',
       waveSurfer: null,
     };
     this.beforeUpload = this.beforeUpload.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
   }
 
   beforeUpload(file) {
@@ -24,9 +24,16 @@ class App extends Component {
     this.setState({
       file,
       filePath: window.URL.createObjectURL(file),
-      fileType: file.type,
     });
     return false;
+  }
+
+  handleSearch(value) {
+    console.log(value);
+    this.setState({
+      file: value,
+      filePath: value,
+    });
   }
 
   render() {
@@ -53,14 +60,15 @@ class App extends Component {
             <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
           </Dragger>
         </div>
+        <Input.Search placeholder="请输入远程音频地址" enterButton={<Icon type="enter" />} onSearch={this.handleSearch} />
         <MyComponent {...myComponentProps} />
-        <div>
+        {/* <div>
           <audio controls>
-            {this.state.filePath && this.state.fileType ? (
-              <source src={this.state.filePath} type={this.state.fileType} />
+            {this.state.filePath ? (
+              <source src={this.state.filePath} />
             ) : null}
           </audio>
-        </div>
+        </div> */}
       </div>
     );
   }
