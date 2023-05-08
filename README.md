@@ -11,6 +11,7 @@
 |     plugins     | [wavesurfer.js插件配置](https://wavesurfer-js.org/plugins/)，设置该参数会使主题插件配置失效 |        `object`        |    -    |
 |      file       |                           音频文件                           | `string`、`File`、`Blob` |    -    |
 |   isDownload    |                         是否启用下载                         |       `boolean`        |  false  |
+|    autoplay     |                           自动播放                         |       `boolean`        |  false  |
 | onWaveSurferRef |                     返回`WaveSurfer`实例                     |    `(ref) => void`     |    -    |
 |     onPlay      |                        开始播放时触发                        |      `() => void`      |    -    |
 |     onPause     |                          暂停时触发                          |      `() => void`      |    -    |
