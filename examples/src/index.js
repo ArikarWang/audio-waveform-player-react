@@ -40,6 +40,7 @@ class App extends Component {
     const myComponentProps = {
       file: this.state.file,
       isDownload: true,
+      autoplay: true,
       onWaveSurferRef: ref => {
         this.setState({
           waveSurfer: ref,
@@ -64,9 +65,7 @@ class App extends Component {
         <MyComponent {...myComponentProps} />
         {/* <div>
           <audio controls>
-            {this.state.filePath ? (
-              <source src={this.state.filePath} />
-            ) : null}
+            <source src='http://101.132.177.250:7777/周深 - 人是_.flac' />
           </audio>
         </div> */}
       </div>

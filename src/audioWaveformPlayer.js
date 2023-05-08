@@ -203,9 +203,7 @@ export class AudioWaveformPlayer extends Component {
       if (me.props.onLoading) {
         me.props.onLoading(e);
       }
-      if (!me.state.isFile) {
-        me.setState(() => ({ loadingProgress: e }));
-      }
+      me.setState(() => ({ loadingProgress: e }));
     });
     // 错误监听
     waveSurfer.on('error', e => {
@@ -330,11 +328,10 @@ export class AudioWaveformPlayer extends Component {
    * 音频加载完成时调用
    */
   onAudioReady() {
-    const me = this;
-    const { waveSurfer } = me.state;
+    const { waveSurfer, isFile } = this.state;
     if (waveSurfer) {
       waveSurfer.setPlaybackRate(1);
-      me.setState(() => ({
+      this.setState(() => ({
         waveSurferLoading: false,
         speechRate: 1,
         isPlay: waveSurfer.isPlaying(),
@@ -345,19 +342,18 @@ export class AudioWaveformPlayer extends Component {
         nowTime: waveSurfer.getCurrentTime(),
       }));
     }
-    if (me.soundTouch) {
-      me.resetSoundTouch();
+    if (this.soundTouch) {
+      this.resetSoundTouch();
     }
     if (this.props.autoplay) {
-      setTimeout(async () => {
-        const autoplay = await me.testAutoPlay(me.props.file);
-        // console.log(autoplay);
+      const path = isFile ? window.URL.createObjectURL(this.props.file) : this.props.file;
+      this.testAutoPlay(path).then(autoplay => {
         if (autoplay) {
           waveSurfer.play();
         } else {
           // message.warning('不支持自动播放')
         }
-      }, 10);
+      });
     }
   }
 
