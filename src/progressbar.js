@@ -372,7 +372,7 @@ export class ProgressBar extends Component {
                 <Dropdown overlay={speechRateContent} trigger={['click']}>
                   <a className="speech-rate-text" onClick={e => e.preventDefault()}>
                     {/* 语速：{speechRate}x */}
-                    {speechRate === 1 ? '语速' : speechRate + 'x'}
+                    {speechRate === '1' ? '语速' : speechRate + 'x'}
                   </a>
                 </Dropdown>
               </div>

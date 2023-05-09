@@ -31,8 +31,8 @@ export class AudioWaveformPlayer extends Component {
       totalTime: 0, // 总时长
       nowTime: 0, // 当前播放时长
       volume: 0, // 音量
-      speechRate: 1, // 语速
-      speechRateOptions: [2, 1.5, 1.25, 1, 0.75, 0.5], // 语速选项
+      speechRate: '1', // 语速
+      speechRateOptions: ['2', '1.5', '1.25', '1', '0.75', '0.5'], // 语速选项
       autoplay: false, // 是否自动播放
       isFile: false, // 是否是文件
     };
@@ -47,6 +47,7 @@ export class AudioWaveformPlayer extends Component {
     this.isFile = this.isFile.bind(this);
     this.onSpeedUpdate = this.onSpeedUpdate.bind(this);
     this.testAutoPlay = this.testAutoPlay.bind(this);
+    this.changeACFilter = this.changeACFilter.bind(this);
   }
 
   /**
@@ -150,6 +151,9 @@ export class AudioWaveformPlayer extends Component {
         me.props.onPause();
       }
       me.resetSoundTouch();
+      // if (me.soundTouch && me.soundTouchNode) {
+      //   me.soundTouchNode.pause();
+      // }
       setTimeout(() => {
         me.setState(() => ({ isPlay: me.state.waveSurfer.isPlaying() }));
       }, 10);
@@ -250,12 +254,28 @@ export class AudioWaveformPlayer extends Component {
   }
 
   /**
+   * changeACFilter, 改变音频滤波器
+   * @param {*} filter  滤波器
+   * @returns
+   */
+  changeACFilter(filter) {
+    const waveSurfer = this.state.waveSurfer;
+    if (!waveSurfer) return;
+    if (filter) {
+      waveSurfer.backend.setFilter(filter);
+    } else {
+      waveSurfer.backend.disconnectFilters();
+    }
+  }
+
+  /**
    * 初始化soundTouch
    * @returns
    */
   initSoundTouch() {
     const waveSurfer = this.state.waveSurfer;
     if (!waveSurfer) return;
+    if (this.soundTouch) this.resetSoundTouch();
 
     const buffer = waveSurfer.backend.buffer;
     const bufferLength = buffer.length;
@@ -265,11 +285,12 @@ export class AudioWaveformPlayer extends Component {
 
     const source = {
       extract: (target, numFrames, position) => {
-        if (this.shouldSTSync) {
-          // get the new diff
-          seekingDiff = ~~(waveSurfer.backend.getPlayedPercents() * bufferLength) - position;
-          this.shouldSTSync = false;
-        }
+        // if (this.shouldSTSync) {
+        //   // get the new diff
+        //   seekingDiff = ~~(waveSurfer.backend.getPlayedPercents() * bufferLength) - position;
+        //   this.shouldSTSync = false;
+        // }
+        seekingDiff = ~~(waveSurfer.backend.getPlayedPercents() * bufferLength) - position;
 
         position += seekingDiff;
 
@@ -287,12 +308,13 @@ export class AudioWaveformPlayer extends Component {
       waveSurfer.backend.ac,
       new SimpleFilter(source, this.soundTouch)
     );
-    waveSurfer.backend.setFilter(this.soundTouchNode);
+    this.changeACFilter(this.soundTouchNode);
   }
   /**
    * 重置soundTouch
    */
   resetSoundTouch() {
+    this.changeACFilter();
     if (this.soundTouch) {
       this.soundTouch.clear();
       this.soundTouch.tempo = 1;
@@ -311,16 +333,16 @@ export class AudioWaveformPlayer extends Component {
   onSpeedUpdate() {
     const me = this;
     const speed = this.state.waveSurfer.getPlaybackRate();
-    if (speed === 1) {
+    if (speed === '1') {
       this.resetSoundTouch();
     } else {
       if (!this.soundTouch) {
         this.initSoundTouch();
       }
       this.soundTouch.tempo = speed;
-      setTimeout(() => {
-        me.shouldSTSync = true;
-      }, 10);
+      this.shouldSTSync = true;
+      // setTimeout(() => {
+      // }, 0);
     }
   }
 
@@ -330,10 +352,10 @@ export class AudioWaveformPlayer extends Component {
   onAudioReady() {
     const { waveSurfer, isFile } = this.state;
     if (waveSurfer) {
-      waveSurfer.setPlaybackRate(1);
+      waveSurfer.setPlaybackRate('1');
       this.setState(() => ({
         waveSurferLoading: false,
-        speechRate: 1,
+        speechRate: '1',
         isPlay: waveSurfer.isPlaying(),
         rate: waveSurfer.getCurrentTime(),
         volume: waveSurfer.getVolume(),
@@ -342,9 +364,7 @@ export class AudioWaveformPlayer extends Component {
         nowTime: waveSurfer.getCurrentTime(),
       }));
     }
-    if (this.soundTouch) {
-      this.resetSoundTouch();
-    }
+    this.initSoundTouch();
     if (this.props.autoplay) {
       const path = isFile ? window.URL.createObjectURL(this.props.file) : this.props.file;
       this.testAutoPlay(path).then(autoplay => {
@@ -371,18 +391,14 @@ export class AudioWaveformPlayer extends Component {
   // }
   componentDidUpdate(preProps, preState) {
     if (!!this.props.file && preProps.file !== this.props.file && this.state.waveSurfer !== null) {
-      // console.log('filePathChange');
       if (this.state.waveSurfer) {
         this.isFile(this.props.file)
           ? this.state.waveSurfer.loadBlob(this.props.file)
           : this.state.waveSurfer.load(this.props.file);
-        this.setState(() => ({
-          // file: this.props.file,
-          waveSurferLoading: true,
-        }));
-      } else {
-        this.initWaveSurfer();
+        this.setState(() => ({ waveSurferLoading: true }));
+        return;
       }
+      this.initWaveSurfer();
     }
   }
 
@@ -498,12 +514,12 @@ export class AudioWaveformPlayer extends Component {
         // console.log('speechRateChange');
         if (me.state.waveSurfer.isPlaying()) {
           me.state.waveSurfer.pause();
-          me.state.waveSurfer.setPlaybackRate(Number(key));
+          me.state.waveSurfer.setPlaybackRate(key);
           me.state.waveSurfer.play();
         } else {
-          me.state.waveSurfer.setPlaybackRate(Number(key));
+          me.state.waveSurfer.setPlaybackRate(key);
         }
-        me.setState(() => ({ speechRate: Number(key) }));
+        me.setState(() => ({ speechRate: key }));
       },
       volumeChange(val) {
         me.state.waveSurfer.setVolume(val);
