@@ -9,7 +9,7 @@ export default {
       height: 30,
       responsive: true,
       cursorColor: '#a15748',
-      // backend: 'MediaElement',
+      backend: 'MediaElement',
       splitChannelsOptions: {
         overlay: false,
         channelColors: {

@@ -1,6 +1,6 @@
 {
   "name": "audio-waveform-player-react",
-  "version": "2.0.1-beta.1",
+  "version": "3.0.1-beta.1",
   "description": "基于wavesurferjs的音频波形播放器",
   "main": "dist/index.js",
   "devDependencies": {
@@ -34,7 +34,6 @@
   "license": "MIT",
   "dependencies": {
     "antd": "^3.12.3",
-    "soundtouchjs": "^0.1.30",
     "wavesurfer.js": "^6.6.3"
   }
 }

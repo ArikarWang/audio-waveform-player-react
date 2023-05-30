@@ -14,7 +14,6 @@ import message from 'antd/es/message';
 import 'antd/es/message/style/css';
 import Spin from 'antd/es/spin';
 import 'antd/es/spin/style/css';
-import { SoundTouch, SimpleFilter, getWebAudioNode } from 'soundtouchjs';
 import ProgressBar from './progressbar';
 import themeConfig from './theme';
 
@@ -36,18 +35,11 @@ export class AudioWaveformPlayer extends Component {
       autoplay: false, // 是否自动播放
       isFile: false, // 是否是文件
     };
-    this.shouldSTSync = false; // 是否需要同步
-    this.soundTouch = null; // soundTouch实例
-    this.soundTouchNode = null; // soundTouch节点
 
     this.initWaveSurfer = this.initWaveSurfer.bind(this);
     this.onAudioReady = this.onAudioReady.bind(this);
-    this.resetSoundTouch = this.resetSoundTouch.bind(this);
-    this.initSoundTouch = this.initSoundTouch.bind(this);
     this.isFile = this.isFile.bind(this);
-    this.onSpeedUpdate = this.onSpeedUpdate.bind(this);
     this.testAutoPlay = this.testAutoPlay.bind(this);
-    this.changeACFilter = this.changeACFilter.bind(this);
   }
 
   /**
@@ -141,7 +133,6 @@ export class AudioWaveformPlayer extends Component {
       if (me.props.onPlay) {
         me.props.onPlay();
       }
-      me.onSpeedUpdate();
       me.setState(() => ({ isPlay: me.state.waveSurfer.isPlaying() }));
     });
     // 暂停
@@ -150,10 +141,6 @@ export class AudioWaveformPlayer extends Component {
       if (me.props.onPause) {
         me.props.onPause();
       }
-      me.resetSoundTouch();
-      // if (me.soundTouch && me.soundTouchNode) {
-      //   me.soundTouchNode.pause();
-      // }
       setTimeout(() => {
         me.setState(() => ({ isPlay: me.state.waveSurfer.isPlaying() }));
       }, 10);
@@ -164,7 +151,6 @@ export class AudioWaveformPlayer extends Component {
       if (me.props.onFinish) {
         me.props.onFinish();
       }
-      me.resetSoundTouch();
       me.setState(() => ({ rate: 1 }));
     });
     // 进度(波形)
@@ -173,7 +159,6 @@ export class AudioWaveformPlayer extends Component {
       if (me.props.onSeek) {
         me.props.onSeek(e);
       }
-      this.shouldSTSync = true;
       me.setState(() => ({
         totalTime: me.state.waveSurfer.getDuration(),
         nowTime: me.state.waveSurfer.getCurrentTime(),
@@ -193,7 +178,7 @@ export class AudioWaveformPlayer extends Component {
       }));
     });
     // 音频加载完成
-    waveSurfer.on('ready', () => {
+    waveSurfer.on('waveform-ready', () => {
       // console.log('ready');
       if (me.props.onReady) {
         me.props.onReady();
@@ -254,99 +239,6 @@ export class AudioWaveformPlayer extends Component {
   }
 
   /**
-   * changeACFilter, 改变音频滤波器
-   * @param {*} filter  滤波器
-   * @returns
-   */
-  changeACFilter(filter) {
-    const waveSurfer = this.state.waveSurfer;
-    if (!waveSurfer) return;
-    if (filter) {
-      waveSurfer.backend.setFilter(filter);
-    } else {
-      waveSurfer.backend.disconnectFilters();
-    }
-  }
-
-  /**
-   * 初始化soundTouch
-   * @returns
-   */
-  initSoundTouch() {
-    const waveSurfer = this.state.waveSurfer;
-    if (!waveSurfer) return;
-    if (this.soundTouch) this.resetSoundTouch();
-
-    const buffer = waveSurfer.backend.buffer;
-    const bufferLength = buffer.length;
-    const lChannel = buffer.getChannelData(0);
-    const rChannel = buffer.numberOfChannels > 1 ? buffer.getChannelData(1) : lChannel;
-    let seekingDiff = 0;
-
-    const source = {
-      extract: (target, numFrames, position) => {
-        // if (this.shouldSTSync) {
-        //   // get the new diff
-        //   seekingDiff = ~~(waveSurfer.backend.getPlayedPercents() * bufferLength) - position;
-        //   this.shouldSTSync = false;
-        // }
-        seekingDiff = ~~(waveSurfer.backend.getPlayedPercents() * bufferLength) - position;
-
-        position += seekingDiff;
-
-        for (let i = 0; i < numFrames; i++) {
-          target[i * 2] = lChannel[i + position];
-          target[i * 2 + 1] = rChannel[i + position];
-        }
-
-        return Math.min(numFrames, bufferLength - position);
-      },
-    };
-
-    this.soundTouch = new SoundTouch(waveSurfer.backend.ac.sampleRate);
-    this.soundTouchNode = getWebAudioNode(
-      waveSurfer.backend.ac,
-      new SimpleFilter(source, this.soundTouch)
-    );
-    this.changeACFilter(this.soundTouchNode);
-  }
-  /**
-   * 重置soundTouch
-   */
-  resetSoundTouch() {
-    this.changeACFilter();
-    if (this.soundTouch) {
-      this.soundTouch.clear();
-      this.soundTouch.tempo = 1;
-    }
-    if (this.soundTouchNode) {
-      this.soundTouchNode.disconnect();
-    }
-    this.soundTouch = null;
-    this.soundTouchNode = null;
-    this.shouldSTSync = false;
-  }
-  /**
-   * 播放速度改变时调用
-   * @param {*} speed
-   */
-  onSpeedUpdate() {
-    const me = this;
-    const speed = this.state.waveSurfer.getPlaybackRate();
-    if (speed === '1') {
-      this.resetSoundTouch();
-    } else {
-      if (!this.soundTouch) {
-        this.initSoundTouch();
-      }
-      this.soundTouch.tempo = speed;
-      this.shouldSTSync = true;
-      // setTimeout(() => {
-      // }, 0);
-    }
-  }
-
-  /**
    * 音频加载完成时调用
    */
   onAudioReady() {
@@ -364,7 +256,6 @@ export class AudioWaveformPlayer extends Component {
         nowTime: waveSurfer.getCurrentTime(),
       }));
     }
-    this.initSoundTouch();
     if (this.props.autoplay) {
       const path = isFile ? window.URL.createObjectURL(this.props.file) : this.props.file;
       this.testAutoPlay(path).then(autoplay => {
@@ -411,7 +302,6 @@ export class AudioWaveformPlayer extends Component {
       // this.state.waveSurfer.unAll();
       this.state.waveSurfer.destroy();
     }
-    this.resetSoundTouch();
   }
   /**
    * 音频自动播放测试

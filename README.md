@@ -1,6 +1,6 @@
 2.0.1-beta.1
 
-带音频波形显示的音频播放器,基于wavesurferjs,倍速播放优化使用了soundtouchjs
+带音频波形显示的音频播放器,基于wavesurferjs
 
 当前版本只提供默认主题
 
