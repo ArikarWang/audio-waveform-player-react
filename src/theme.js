@@ -10,6 +10,9 @@ export default {
       responsive: true,
       cursorColor: '#a15748',
       backend: 'MediaElement',
+      // mediaControls: true,
+      // mediaType: 'video',
+      // backend: 'WebAudio',
       splitChannelsOptions: {
         overlay: false,
         channelColors: {
@@ -25,6 +28,7 @@ export default {
       },
       xhr: {
         // mode: 'no-cors', // no-cors, cors, *same-origin
+        // responseType: 'file',
       },
     },
     plugins: {

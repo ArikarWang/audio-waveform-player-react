@@ -38,7 +38,7 @@ export class AudioWaveformPlayer extends Component {
 
     this.initWaveSurfer = this.initWaveSurfer.bind(this);
     this.onAudioReady = this.onAudioReady.bind(this);
-    this.isFile = this.isFile.bind(this);
+    this.checkIsFile = this.checkIsFile.bind(this);
     this.testAutoPlay = this.testAutoPlay.bind(this);
   }
 
@@ -186,6 +186,15 @@ export class AudioWaveformPlayer extends Component {
       // me.setState(() => ({ waveSurferLoading: false }));
       me.onAudioReady();
     });
+    // 音频加载完成
+    // waveSurfer.on('ready', () => {
+    //   // console.log('ready');
+    //   if (me.props.onReady) {
+    //     me.props.onReady();
+    //   }
+    //   // me.setState(() => ({ waveSurferLoading: false }));
+    //   me.onAudioReady();
+    // });
     // 音频加载状态
     waveSurfer.on('loading', e => {
       // console.log('loading', e);
@@ -229,7 +238,7 @@ export class AudioWaveformPlayer extends Component {
     };
 
     if (this.props.file) {
-      this.isFile(this.props.file)
+      this.checkIsFile(this.props.file)
         ? waveSurfer.loadBlob(this.props.file)
         : waveSurfer.load(this.props.file);
       newState.waveSurferLoading = true;
@@ -280,12 +289,19 @@ export class AudioWaveformPlayer extends Component {
   //   }
   //   return null;
   // }
+
   componentDidUpdate(preProps, preState) {
     if (!!this.props.file && preProps.file !== this.props.file && this.state.waveSurfer !== null) {
       if (this.state.waveSurfer) {
-        this.isFile(this.props.file)
-          ? this.state.waveSurfer.loadBlob(this.props.file)
-          : this.state.waveSurfer.load(this.props.file);
+        console.log('file', this.props.file);
+        if (this.checkIsFile(this.props.file)) {
+          const file = window.URL.createObjectURL(this.props.file)
+          this.state.waveSurfer.load(file);
+          // this.state.waveSurfer.loadBlob(this.props.file);
+        } else {
+          this.state.waveSurfer.load(this.props.file);
+        }
+        // this.state.waveSurfer.load(this.props.file);
         this.setState(() => ({ waveSurferLoading: true }));
         return;
       }
@@ -346,10 +362,10 @@ export class AudioWaveformPlayer extends Component {
    * @param {*} file
    * @returns true 文件对象 false 文件地址
    */
-  isFile(file) {
-    this.setState(() => ({ isFile: file instanceof File }));
+  checkIsFile(file) {
+    this.setState(() => ({ isFile: file instanceof File || file instanceof Blob }));
     // console.log('loadFile');
-    return file instanceof File;
+    return file instanceof File || file instanceof Blob;
   }
 
   render() {

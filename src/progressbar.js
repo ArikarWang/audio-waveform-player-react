@@ -255,14 +255,26 @@ export class ProgressBar extends Component {
     switch (key) {
       case 'download':
         if (this.props.file) {
+          console.log(this.props.file);
           const el = document.createElement('a');
           if (this.props.isFile) {
             el.href = window.URL.createObjectURL(this.props.file);
-            el.download = this.props.file.name;
+            el.download = this.props.file.name || 'audio.mp3';
           } else {
             el.href = this.props.file;
+            const urlObj = new URL(this.props.file);
+            console.log(urlObj);
+            let downloadName = decodeURIComponent(urlObj.pathname);
+
+            //如果开头是/，则去掉
+            if (downloadName.startsWith('/')) {
+              downloadName = downloadName.substring(1);
+            }
+
+            el.download = downloadName || 'audio.mp3';
           }
-          el.hidden = true;
+          el.style.display = 'none';
+          console.dir(el);
           document.body.appendChild(el);
           el.click();
           document.body.removeChild(el);
